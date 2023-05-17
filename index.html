@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live match</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .container h2 {
+            text-align: center;
+            font-size: 44px;
+            color: red;
+            margin: 22px 0;
+        }
+
+        .first {
+            width: 1000px;
+            margin: auto;
+            margin-top: 40px;
+        }
+
+        .score,
+        .overs {
+            font-size: 29px;
+        }
+
+        .buttons {
+            display: flex;
+            margin-top: 22px;
+        }
+
+        .buttons button {
+            font-size: 20px;
+            padding: 10px 8px;
+            margin-left: 14px;
+        }
+
+        p {
+            text-align: center;
+            color: red;
+            margin-top: 40px;
+            font-size: 44px;
+        }
+
+        #second {
+            display: none;
+        }
+
+        #need {
+            display: none;
+        }
+
+        @media screen and (max-width: 780px) {
+            .first {
+                width: 100%;
+                margin: 0;
+                padding: 0 10px;
+            }
+
+            .buttons button {
+                font-size: 14px;
+                padding: 10px 8px;
+                margin-left: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>LIVE</h2>
+        <div class="first">
+            <h3>First</h3>
+            <div style="display: flex;justify-content: space-between;">
+                <div class="score" id="firstScore">00</div>
+                <div class="overs" id="firstOver">00</div>
+            </div>
+            <div class="buttons">
+                <button>0</button>
+                <button>1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>4</button>
+                <button>5</button>
+                <button>6</button>
+                <button>WD</button>
+                <button>w</button>
+            </div>
+        </div>
+
+        <div class="first" id="second">
+            <h3>Second</h3>
+            <div style="display: flex;justify-content: space-between;">
+                <div class="score" id="secondScore">00</div>
+                <div class="overs" id="secondOver">00</div>
+            </div>
+            <div class="buttons" id="SecondButton">
+                <button>0</button>
+                <button>1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>4</button>
+                <button>5</button>
+                <button>6</button>
+                <button>WD</button>
+                <button>w</button>
+            </div>
+        </div>
+
+        <p id="need">199 runs in 77 balls</p>
+    </div>
+
+    <script>
+        const firstScore = document.querySelector("#firstScore");
+        const firstOver = document.querySelector("#firstOver");
+        const buttons = document.querySelectorAll(".buttons button");
+        const secondScore = document.querySelector("#secondScore");
+        const secondOver = document.querySelector("#secondOver");
+        const need = document.querySelector("#need");
+
+        var runs = 0;
+        var over = 0;
+        var ball = 0;
+        var w = 0;
+        firstScore.innerHTML = runs;
+        buttons.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                if (over > 5) {
+                    // firstScore.innerHTML = runs;
+                    over = 6;
+                    ball = null;
+                    firstScore.innerHTML = `${runs}-${w}`;
+                    firstOver.innerHTML = `${over}`;
+                    localStorage.setItem("firstInnings", runs);
+                    second.style.display = "block";
+                    need.style.display = 'block';
+                    var needrun = localStorage.getItem("firstInnings");
+                    needrun = Number(needrun) + 1;
+                    need.innerHTML = `${needrun} runs in ${remainBall}`;
+                } else {
+                    if (btn.innerHTML === "w") {
+                        w++;
+                        ball++;
+                        firstScore.innerHTML = `${runs}-${w}`;
+                        firstOver.innerHTML = `${over}.${ball}`;
+                        if (ball > 5) {
+                            over++;
+                            firstOver.innerHTML = `${over}`;
+                            ball = 0;
+                        }
+                      
+                    }
+                    else if(btn.innerHTML === "WD"){
+                        runs = runs + 1;
+                        firstScore.innerHTML = `${runs}-${w}`;
+                        firstOver.innerHTML = `${over}.${ball}`;
+                    }
+                    else {
+                        runs += Number(btn.innerHTML);
+                        ball++;
+                        firstScore.innerHTML = `${runs}-${w}`;
+                        firstOver.innerHTML = `${over}.${ball}`;
+                        if (ball > 5) {
+                            over++;
+                            firstOver.innerHTML = `${over}`;
+                            ball = 0;
+                        }
+
+                    }
+                }
+            })
+        })
+
+        const SecondButton = document.querySelectorAll("#SecondButton button");
+
+
+        var runs1 = 0;
+        var over1 = 0;
+        var ball1 = 0;
+        var w1 = 0;
+        var remainBall = 36;
+        secondScore.innerHTML = runs1;
+
+
+
+        SecondButton.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                var needrun = localStorage.getItem("firstInnings");
+                needrun = Number(needrun) + 1;
+
+                if (over1 > 5) {
+                    secondScore.innerHTML = runs1;
+                    over1 = 6;
+                    ball1 = null;
+                    remainBall = null;
+                    secondScore.innerHTML = `${runs1}-${w1}`;
+                    secondOver.innerHTML = `${over1}`;
+                } else {
+                    if (btn.innerHTML === "w") {
+                        w1++;
+                        ball1++;
+                        remainBall--;
+
+                        if (ball1 > 5) {
+                            over1++;
+                            secondOver.innerHTML = `${over1}`;
+                            ball1 = 0;
+                        }
+
+                        secondScore.innerHTML = `${runs1}-${w1}`;
+                        secondOver.innerHTML = `${over1}.${ball1}`;     
+                        var needruns = needrun - runs1;
+
+                        if (needruns < 0) {
+                            need.innerHTML = `second have won the match`;
+                            secondOver.innerHTML = `${over1}.${ball1}`;
+                            secondScore.innerHTML = `${runs1}-${w1}`;
+                            remainBall = null;
+                            alert("Second have won the match");
+                        } else {
+                            need.innerHTML = `${needruns} runs in ${remainBall}`;
+                        }
+                        if (remainBall < 1) {
+                            need.innerHTML = `first have won the match`;
+                            ball1 = null;
+                            remainBall = null;
+                            alert("first have won the match")
+                        } else {
+                            need.innerHTML = `${needruns} runs in ${remainBall}`;
+                        }
+                    } 
+                    else if(btn.innerHTML === "WD"){
+                        runs1 = runs1 + 1;
+                        secondScore.innerHTML = `${runs1}-${w1}`;
+                        secondOver.innerHTML = `${over1}.${ball1}`;
+                        var needruns = needrun - runs1;
+                        need.innerHTML = `${needruns} runs in ${remainBall}`;
+                    }
+
+                    else {
+                        runs1 += Number(btn.innerHTML);
+                        ball1++;
+                        remainBall--;
+                        secondScore.innerHTML = `${runs1}-${w1}`;
+                        secondOver.innerHTML = `${over1}.${ball1}`;
+                        var needruns = needrun - runs1;
+                        if (needruns < 1) {
+                            need.innerHTML = "Second have won the match";
+                            alert("Second have won the match");
+                        } else if (remainBall < 1) {
+                            need.innerHTML = `first have won the match`;
+                            alert("first have won the match");
+                        }
+                        else {
+                            need.innerHTML = `${needruns} runs in ${remainBall}`;
+                        }
+
+                        if (ball1 > 5) {
+                            over1++;
+                            secondOver.innerHTML = `${over1}`;
+                            ball1 = 0;
+                        }
+                    }
+
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>
